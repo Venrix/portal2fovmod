@@ -15,7 +15,9 @@ A stripped-down fork of [SourceAutoRecord](https://github.com/p2sr/SourceAutoRec
 
 ## Usage
 
-1. Build (see below) to produce `fovmod.dll` (Windows) or `fovmod.so` (Linux).
+1. Get `fovmod.dll` (Windows) or `fovmod.so` (Linux) and `fovmod.vdf` — download
+   them from the [latest release](../../releases), or build from source (see
+   [Build](#build)).
 2. Drop the binary into your **Portal 2 install folder** (next to `portal2.exe`).
 3. Copy `fovmod.vdf` into `Portal 2/portal2/addons/` (create the `addons` folder
    if it doesn't exist). The engine scans that folder at launch and loads every
@@ -31,6 +33,8 @@ next to `portal2.exe`, where the binary lives. If the plugin fails to load, move
 `"file" "addons/fovmod"`.
 
 ## Build
+
+Only needed if you're not using a prebuilt [release](../../releases).
 
 ### Windows (Visual Studio)
 
