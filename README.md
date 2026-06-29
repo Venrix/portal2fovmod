@@ -1,69 +1,54 @@
-# SourceAutoRecord
+# Portal 2 Persistent FOV Mod
 
-<div align="center">
+A minimal Portal 2 plugin that adds one console command:
 
-[![SourceAutoRecord Homepage](docs/web/img/sar_logo.webp)](https://sar.portal2.sr/)
+```
+fov <value>
+```
 
-</div>
+Forces your field of view to `<value>` (**45–140**) and keeps it there across map
+loads; use `0` to turn it off. The value is saved (to `fovmod.cfg`), so it sticks
+across game restarts.
 
-<div align="center">
+A stripped-down fork of [SourceAutoRecord](https://github.com/p2sr/SourceAutoRecord)
+(MIT) with everything but FOV forcing removed.
 
-[![CI](https://github.com/p2sr/SourceAutoRecord/workflows/CI/badge.svg)](https://github.com/p2sr/SourceAutoRecord/actions?query=workflow%3ACI+branch%3Amaster)
-[![CD](https://github.com/p2sr/SourceAutoRecord/workflows/CD/badge.svg)](https://github.com/p2sr/SourceAutoRecord/actions?query=workflow%3ACD+branch%3Amaster)
-[![Latest release](https://img.shields.io/github/v/release/p2sr/SourceAutoRecord?label=latest%20release)](https://github.com/p2sr/SourceAutoRecord/releases/latest)
-[![License](https://img.shields.io/github/license/p2sr/SourceAutoRecord)](https://github.com/p2sr/SourceAutoRecord/blob/master/LICENSE)
+## Usage
 
-</div>
+1. Build (see below) to produce `fovmod.dll` (Windows) or `fovmod.so` (Linux).
+2. Drop the binary into your **Portal 2 install folder** (next to `portal2.exe`).
+3. Copy `fovmod.vdf` into `Portal 2/portal2/addons/` (create the `addons` folder
+   if it doesn't exist). The engine scans that folder at launch and loads every
+   plugin listed, so `fov` is available from the console every session.
 
-<div align="center">
+In the console (needs `-console`), `fov 90` forces the FOV to 90;
+`fov 0` disables forcing. The value is remembered across restarts, so you
+normally only set it once.
 
-### [Overview](#overview) | [Support](#support) | [Documentation](#documentation)
+The `.vdf` points at `"file" "fovmod"`, resolved relative to the install root
+next to `portal2.exe`, where the binary lives. If the plugin fails to load, move
+`fovmod.dll` next to the `.vdf` in `addons/` and change the line to
+`"file" "addons/fovmod"`.
 
-</div>
+## Build
 
-## Overview
+### Windows (Visual Studio)
 
-**SourceAutoRecord** (**SAR**) is a plugin for Portal 2 and mods based on it, bringing lots of features and modifications
-into the game for speedrunners and people alike.
+Open `fovmod.sln`, select **Release | x86**, and build. Output goes to
+`bin\fovmod.dll`.
 
-For features and installation instructions, please visit [the website].
+> Must be **32-bit** (Win32). Portal 2 is a 32-bit process. The static CRT
+> (`/MT`) is required.
 
-[the website]: https://sar.portal2.sr/
+### Linux
 
-## Support
+```sh
+make
+```
 
-| Game                                                                       | Windows | Linux |
-|----------------------------------------------------------------------------|---------|-------|
-| [Portal 2 (Steam)](https://store.steampowered.com/app/620)                 | ✔       | ✔     |
-| [Portal 2 (4554)](https://sourceunpack.gameabusefastcomplete.com/#p2-4554) | ✔       | ➖    |
-| [Aperture Tag](https://store.steampowered.com/app/280740)                  | ✔       | [➖](https://wiki.portal2.sr/Aperture_Tag#Linux) |
-| [Portal Stories: Mel](https://store.steampowered.com/app/317400)           | ✔       | ✔     |
-| [Thinking with Time Machine](https://store.steampowered.com/app/286080)    | ✔       | ❌    |
-| [Portal Reloaded](https://store.steampowered.com/app/1255980)              | ✔       | ✔     |
-| [INFRA](https://store.steampowered.com/app/251110)                         | ✔       | ➖    |
-| [The Beginner's Guide](https://store.steampowered.com/app/303210)          | ✔       | ✔     |
-| [The Stanley Parable](https://store.steampowered.com/app/221910)           | ✔       | ✔     |
-| [The Cleaning Game](https://store.steampowered.com/app/3281900)            | ✔       | ➖    |
-| Divinity Chapter 2 *(closed beta)*                                         | ✔       | ❓    |
+Produces `fovmod.so`. Needs a 32-bit g++ toolchain (`-m32`).
 
-If you're playing a game with no Linux support, you can use Proton to run it.
+## Compatibility
 
-## Experimental Support
-
-### Known Issues
-
-The Beginner's Guide:
-
-- When recording demos, the title cards / start of each "game" stays black
-  until you move.
-- Rendering most definitely does not work.
-
-The Stanley Parable:
-
-- Missing speedrun categories for now.
-
-## Documentation
-
-- [Contributing](docs/contributing.md)
-- [Console Commands & Variables](docs/cvars.md)
-- [Setup & Usage](https://wiki.portal2.sr/SAR)
+Offsets target **Portal 2 build 9568** (current retail), 32-bit, Windows & Linux.
+Other Source games / builds would need different vtable offsets in `src/sdk.hpp`.
