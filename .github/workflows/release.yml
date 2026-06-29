@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build-win:
+    name: Windows Build
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7
+      - uses: microsoft/setup-msbuild@v3
+      - name: Build
+        run: msbuild -m -t:fovmod -p:"Configuration=Release;Platform=x86;PlatformToolset=v143" fovmod.sln
+      - uses: actions/upload-artifact@v7
+        with: { name: win, path: bin/fovmod.dll, if-no-files-found: error }
+
+  build-lin:
+    name: Linux Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install toolchain
+        run: sudo apt-get update && sudo apt-get install -y g++-multilib
+      - name: Build
+        run: make -j$(nproc)
+      - uses: actions/upload-artifact@v7
+        with: { name: lin, path: fovmod.so, if-no-files-found: error }
+
+  release:
+    name: Release
+    needs: [build-win, build-lin]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7  # for fovmod.vdf
+      - uses: actions/download-artifact@v8
+        with: { merge-multiple: true, path: dist }
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            dist/fovmod.dll
+            dist/fovmod.so
+            fovmod.vdf
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            **Install**
+            1. Place `fovmod.dll` (Windows) or `fovmod.so` (Linux) in your Portal 2
+               install folder (next to `portal2.exe`).
+            2. Copy `fovmod.vdf` into `Portal 2/portal2/addons/`.
+
+            Then `fov <value>` is available in the console (auto-loaded each launch).
